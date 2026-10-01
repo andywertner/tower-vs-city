@@ -29,8 +29,8 @@ button:focus-visible { outline: 4px solid var(--gold); outline-offset: 2px; }
 
 #app {
   width: calc(100% / var(--z));
+  /* Plain vh only: a dvh line with var() is not rejected at parse time on Chrome <108 and would kill the fallback. */
   height: calc(100vh / var(--z));
-  height: calc(100dvh / var(--z));
   transform: scale(var(--z));
   transform-origin: 0 0;
   display: grid;
