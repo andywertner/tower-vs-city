@@ -38,7 +38,9 @@ export function render(state: State): string {
     state.phase === "city"
       ? `<div class="veil"><div>${countdown()}<blockquote class="mh-quote"><p>${quote.text}</p><cite>${quote.cite}</cite></blockquote><p class="veil-note">${cityLine()}</p></div></div>`
       : "";
-  return `<div class="skyhead">${pips(state)}${skyline(state)}</div><div class="stage">${stage(state)}</div>${veil}`;
+  const inner = stage(state);
+  const one = /^\s*<(div class="stamp"|section class="info-card")/.test(inner) ? " one" : "";
+  return `<div class="skyhead">${pips(state)}${skyline(state)}</div><div class="stage${one}">${inner}</div>${veil}`;
 }
 
 function bandScreen(): string {
@@ -283,8 +285,9 @@ function ringZones(step: PlaceStep, state: State): string {
     .join("");
   const zone = (ring: number, inner: string) => `<div class="ring-zone r${ring}" data-act="zone" data-zone="r${ring}">${inner}</div>`;
   const nested = zone(2, zone(1, zone(0, "")));
+  const filled = placedIn("r0", step, state).length > 0 ? " filled" : "";
   return `
-    <div class="rings">
+    <div class="rings fit${filled}">
       ${nested}
       <div class="ring-overlay">${overlay}</div>
       <span class="ring-tag in">Foundation</span>
@@ -310,13 +313,14 @@ function wallRing(sections: WallSection[], centerNote: string): string {
       const turn = ((-90 + (i * 360) / n) * Math.PI) / 180;
       const left = 50 + 37 * Math.cos(turn);
       const top = 50 + 36 * Math.sin(turn);
-      const style = `left:${left.toFixed(2)}%;top:${top.toFixed(2)}%${s.color ? `;--c:${s.color}` : ""}`;
+      const style = `left:${left.toFixed(2)}%;top:${top.toFixed(2)}%`;
       const art = s.look === "built" ? PICS_WALL.built : PICS_WALL.broken;
       const cls = ["wall-part", s.look, s.color ? "tinted" : ""].filter(Boolean).join(" ");
-      return `<button type="button" class="${cls}" style="${style}" ${s.act}="${s.key}">${art}<em>${escapeText(s.label)}</em>${s.sub ? `<b>${escapeText(s.sub)}</b>` : ""}</button>`;
+      const tint = s.color ? ` style="--c:${s.color}"` : "";
+      return `<span class="pin" style="${style}"><button type="button" class="${cls}"${tint} ${s.act}="${s.key}">${art}<em>${escapeText(s.label)}</em>${s.sub ? `<b>${escapeText(s.sub)}</b>` : ""}</button></span>`;
     })
     .join("");
-  return `<div class="wall-board"><div class="wall-line"></div><div class="wall-center">${PICS.temple}<span>${centerNote}</span></div>${buttons}</div>`;
+  return `<div class="wall-board fit"><div class="wall-line"></div><div class="wall-center">${PICS.temple}<span>${centerNote}</span></div>${buttons}</div>`;
 }
 
 const PICS_WALL = {
@@ -380,7 +384,7 @@ function deliverBoard(step: Extract<Step, { kind: "deliver" }>, state: State): s
       const got = state.marks.indexOf(p.id);
       const cls = ["person-spot", got >= 0 ? "got" : "", state.bad === p.id ? "bad" : ""].filter(Boolean).join(" ");
       const letter = got >= 0 ? `<b class="got-letter">${step.word[got]}</b>` : "";
-      return `<button type="button" class="${cls}" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%" data-act="zone" data-zone="${p.id}">${personChip(p, step.marker)}<span>${p.name}</span>${letter}</button>`;
+      return `<span class="pin" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%"><button type="button" class="${cls}" data-act="zone" data-zone="${p.id}">${personChip(p, step.marker)}<span>${p.name}</span>${letter}</button></span>`;
     })
     .join("");
   const left = step.order.length - state.marks.length;
@@ -391,7 +395,7 @@ function deliverBoard(step: Extract<Step, { kind: "deliver" }>, state: State): s
   const bar = Array.from(step.word)
     .map((ch, i) => `<i class="${i < state.marks.length ? "on" : ""}${i === state.marks.length - 1 ? " new" : ""}">${i < state.marks.length ? ch : ""}</i>`)
     .join("");
-  return `<div class="board deliver-board"><div class="circle-board">${people}${center}</div><div class="word-bar" aria-label="Word so far">${bar}</div></div>`;
+  return `<div class="board deliver-board"><div class="circle-board fit">${people}${center}</div><div class="word-bar" aria-label="Word so far">${bar}</div></div>`;
 }
 
 function personChip(p: Person, marker: "color" | "shape" | "name"): string {
@@ -595,7 +599,7 @@ function sandboxScreen(state: State): string {
   const rider = sand.stack
     ? `<span class="s-rider" style="bottom:${sand.stack * brickH}px">${creatureIcon(state.creature)}</span>`
     : "";
-  const tower = `<div class="sand-tower ${sand.stack >= 3 ? "sway" : ""}" style="left:${TOWER_X}%;--tilt:${tilt}deg;--sdur:${swayDur}s">${bricks}${rider}</div>`;
+  const tower = `<div class="sand-tower-pin" style="left:${TOWER_X}%"><div class="sand-tower ${sand.stack >= 3 ? "sway" : ""}" style="--tilt:${tilt}deg;--sdur:${swayDur}s">${bricks}${rider}</div></div>`;
   const pieces = sand.pieces.map((p) => pieceHtml(p, state.creature)).join("");
   const palette = PALETTE.map(
     (kind) => `<button type="button" class="card pal" data-act="sand-add" data-kind="${kind}">${pieceArt(kind, state.creature)}<span>${PALETTE_NAMES[kind]}</span></button>`,

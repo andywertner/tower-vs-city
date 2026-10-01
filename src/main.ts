@@ -20,8 +20,25 @@ function draw(): void {
   app!.dataset.band = state.band ?? "";
   app!.classList.toggle("full", state.phase === "band" || state.phase === "creature" || state.phase === "sandbox");
   app!.innerHTML = render(state);
+  fitBoards();
   save(state);
 }
+
+/** Size square boards from the space they get, so cards scale on any screen or Chrome version. */
+function fitBoards(): void {
+  document.querySelectorAll<HTMLElement>(".fit").forEach((el) => {
+    el.style.width = "";
+    el.style.height = "";
+    const parent = el.parentElement;
+    if (!parent) return;
+    const cap = el.classList.contains("rings") ? 460 : 520;
+    const size = Math.max(140, Math.min(el.clientHeight || cap, parent.clientWidth || cap, cap));
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+    el.style.setProperty("--cq", `${size}px`);
+  });
+}
+window.addEventListener("resize", fitBoards);
 
 function armReward(ms: number, fn: () => void): void {
   window.clearTimeout(rewardTimer);
@@ -598,6 +615,7 @@ let zoom = 1;
 function setZoom(z: number): void {
   zoom = Math.round(Math.min(1.8, Math.max(0.7, z)) * 10) / 10;
   app!.style.setProperty("--z", String(zoom));
+  fitBoards();
   const label = document.querySelector<HTMLElement>("#zoom-level");
   if (label) label.textContent = `${Math.round(zoom * 100)}%`;
   try {
