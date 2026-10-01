@@ -433,6 +433,29 @@ button:focus-visible { outline: 4px solid var(--gold); outline-offset: 2px; }
 }
 body.hitting [data-item] { pointer-events: none; }
 
+.confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(36, 30, 24, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.confirm-card {
+  width: min(520px, 100%);
+  background: #fffdf8;
+  border: var(--line);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: 22px 24px;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+.confirm-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+.confirm-row .go { min-width: 0; font-size: 1.25rem; padding: 10px 22px; min-height: 60px; }
+.confirm-row .go.quiet { background: #fffdf8; }
 .veil {
   position: fixed;
   inset: 0;

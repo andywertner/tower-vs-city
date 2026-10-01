@@ -384,7 +384,12 @@ function onClick(event: MouseEvent): void {
     return;
   }
   if (act === "go") return startGame();
-  if (act === "new") return resetAll();
+  if (act === "new") return askStartOver();
+  if (act === "new-yes") {
+    closeStartOver();
+    return resetAll();
+  }
+  if (act === "new-no") return closeStartOver();
   if (act === "next") {
     const step = stepNow();
     if (step?.kind === "card") completeStep();
@@ -566,6 +571,27 @@ function bindHold(el: HTMLElement, action: () => void): void {
   el.addEventListener("pointerup", stop);
   el.addEventListener("pointerleave", stop);
   el.addEventListener("pointercancel", stop);
+}
+
+function askStartOver(): void {
+  if (document.querySelector("#confirm")) return;
+  const box = document.createElement("div");
+  box.id = "confirm";
+  box.className = "confirm";
+  box.innerHTML = `
+    <div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <p class="prompt" id="confirm-title">Start over?</p>
+      <p class="hint">This erases all progress on this screen and goes back to the beginning.</p>
+      <div class="confirm-row">
+        <button type="button" class="go quiet" data-act="new-no">Keep going</button>
+        <button type="button" class="go" data-act="new-yes">Yes, start over</button>
+      </div>
+    </div>`;
+  document.body.appendChild(box);
+}
+
+function closeStartOver(): void {
+  document.querySelector("#confirm")?.remove();
 }
 
 let zoom = 1;

@@ -232,6 +232,18 @@ await p34.click('[data-act="go"]');
 const q34 = await playBand(p34, "34", {});
 if (new Set(q34).size < 5) throw new Error("quotes did not rotate");
 await shot(p34, "34-sandbox");
+await p34.click("#start-over");
+await p34.waitForSelector("#confirm");
+await shot(p34, "34-start-over-confirm");
+await p34.click('[data-act="new-no"]');
+if (await p34.$("#confirm")) throw new Error("Keep going did not close the confirm box");
+if (!(await p34.$(".sandbox"))) throw new Error("Keep going lost the sandbox");
+await p34.click("#start-over");
+await p34.waitForSelector('[data-act="new-yes"]');
+await p34.click('[data-act="new-yes"]');
+await p34.waitForSelector('[data-band="34"]');
+const gateText = await p34.$eval(".gate", (el) => el.textContent);
+if (!gateText.includes("Pick your grade.") || !gateText.includes("Notre Dame de Lourdes School")) throw new Error(gateText);
 
 // 5-6: four towers in a row on levels 2-5, the fall, then only the city.
 const p56 = await browser.newPage();

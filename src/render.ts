@@ -44,9 +44,9 @@ export function render(state: State): string {
 function bandScreen(): string {
   return `
     <section class="gate">
-      <p class="school">Notre Dame de Lourdes · Mr. Wertner</p>
+      <p class="school">Notre Dame de Lourdes School · Mr. Wertner</p>
       <div class="gate-art">${ICONS.blocks}${crossIcon()}</div>
-      <p class="prompt">Pick the grades.</p>
+      <p class="prompt">Pick your grade.</p>
       <div class="grades">
         <button type="button" data-act="band" data-band="34">3–4</button>
         <button type="button" data-act="band" data-band="56">5–6</button>

@@ -18,7 +18,7 @@ export function shark(body: string, belly: string, extra = ""): string {
 }
 
 const CREATURE_SHAPES: Record<string, string> = {
-  baby: shark("#3aa0c8", "#e7f7fb"),
+  baby: shark("#f3c53d", "#fff6d6"),
   daddy: shark("#1f4e79", "#d5e4f2", `<ellipse cx="40" cy="30" rx="10" ry="4" fill="#1f4e79"/>`),
   mommy: shark("#2a9d8f", "#e5f7f4", `<circle cx="58" cy="30" r="5" fill="#e76f51"/><circle cx="58" cy="30" r="2" fill="#f4d35e"/>`),
   grandma: shark("#7d6b5a", "#f3ebe3", `<circle cx="31" cy="44" r="6.2" fill="none" stroke="#241e18" stroke-width="1.4"/><circle cx="50" cy="44" r="6.2" fill="none" stroke="#241e18" stroke-width="1.4"/><path d="M37 44 H44" stroke="#241e18" stroke-width="1.4"/>`),
