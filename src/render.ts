@@ -44,6 +44,8 @@ export function render(state: State): string {
 function bandScreen(): string {
   return `
     <section class="gate">
+      <h1 class="title">Tower vs City</h1>
+      <p class="subtitle">An Exploration of Magnifica Humanitas by Pope Leo XIV</p>
       <p class="school">Notre Dame de Lourdes School · Mr. Wertner</p>
       <div class="gate-art">${ICONS.blocks}${crossIcon()}</div>
       <p class="prompt">Pick your grade.</p>
