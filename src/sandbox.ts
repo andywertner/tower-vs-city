@@ -26,14 +26,14 @@ export function scatter(sand: Sandbox, rand: () => number): Sandbox {
     id: sand.next + i,
     kind: "brick",
     x: round(40 + rand() * 54),
-    y: round(62 + rand() * 30),
+    y: round(72 + rand() * 20),
     r: Math.round(rand() * 120 - 60),
   }));
   return { pieces: [...sand.pieces, ...bricks], stack: 0, next: sand.next + bricks.length, falls: sand.falls + 1 };
 }
 
 export function addPiece(sand: Sandbox, kind: string, rand: () => number): Sandbox {
-  const piece: Piece = { id: sand.next, kind, x: round(12 + rand() * 50), y: round(30 + rand() * 50), r: 0 };
+  const piece: Piece = { id: sand.next, kind, x: round(8 + rand() * 60), y: round(72 + rand() * 20), r: 0 };
   return { ...sand, pieces: [...sand.pieces, piece], next: sand.next + 1 };
 }
 
@@ -44,11 +44,16 @@ export function startSand(sand: Sandbox, rubble: number, rand: () => number): Sa
   return { ...withRubble, falls: 0, pieces: [...withRubble.pieces, family], next: withRubble.next + 1 };
 }
 
+/** Moves a piece and brings it to the front, so the last thing you touched is never hidden behind another piece. */
 export function movePiece(sand: Sandbox, id: number, x: number, y: number): Sandbox {
-  return {
-    ...sand,
-    pieces: sand.pieces.map((p) => (p.id === id ? { ...p, x: round(clamp(x, 2, 98)), y: round(clamp(y, 4, 96)) } : p)),
-  };
+  const piece = sand.pieces.find((p) => p.id === id);
+  if (!piece) return sand;
+  const moved = { ...piece, x: round(clamp(x, 2, 98)), y: round(clamp(y, 4, 96)) };
+  return { ...sand, pieces: [...sand.pieces.filter((p) => p.id !== id), moved] };
+}
+
+export function removePiece(sand: Sandbox, id: number): Sandbox {
+  return { ...sand, pieces: sand.pieces.filter((p) => p.id !== id) };
 }
 
 function round(n: number): number {

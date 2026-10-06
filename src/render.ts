@@ -36,7 +36,7 @@ export function render(state: State): string {
   const quote = quoteFor(state.verseIndex);
   const veil =
     state.phase === "city"
-      ? `<div class="veil"><div>${countdown()}<blockquote class="mh-quote"><p>${quote.text}</p><cite>${quote.cite}</cite></blockquote><p class="veil-note">${cityLine()}</p></div></div>`
+      ? `<div class="veil"><div>${countdown()}<blockquote class="mh-quote"><p>“${quote.text}”</p><cite>${quote.cite}</cite></blockquote><p class="veil-note">${cityLine(state.city)}</p></div></div>`
       : "";
   const inner = stage(state);
   const one = /^\s*<(div class="stamp"|section class="info-card")/.test(inner) ? " one" : "";
@@ -111,7 +111,7 @@ function stage(state: State): string {
 
 function infoCard(step: Extract<Step, { kind: "card" }>): string {
   const quote = step.quote
-    ? `<blockquote class="mh-quote"><p>${step.quote.text}</p><cite>${step.quote.cite}</cite></blockquote>`
+    ? `<blockquote class="mh-quote"><p>“${step.quote.text}”</p><cite>${step.quote.cite}</cite></blockquote>`
     : "";
   return `
     <section class="info-card">
@@ -228,7 +228,8 @@ function familyColor(step: PlaceStep, id: string): string | null {
 }
 
 function card(item: Item, state: State, tint: string | null = null): string {
-  const cls = ["card", item.art ? "" : "text", state.selected === item.id ? "sel" : "", state.bad === item.id ? "bad" : "", tint ? "tinted" : ""]
+  const long = item.art && item.label.split(" ").some((w) => w.length > 8) ? "long" : "";
+  const cls = ["card", item.art ? "" : "text", long, state.selected === item.id ? "sel" : "", state.bad === item.id ? "bad" : "", tint ? "tinted" : ""]
     .filter(Boolean)
     .join(" ");
   const style = tint ? ` style="--c:${tint}"` : "";
@@ -266,7 +267,7 @@ function bookZones(step: PlaceStep, state: State): string {
     .join("")}</div>`;
 }
 
-const RING_MID = [0, 25, 41.7];
+const RING_MID = [0, 27.5, 42.5];
 
 function ringZones(step: PlaceStep, state: State): string {
   const overlay = step.zones
@@ -614,6 +615,7 @@ function sandboxScreen(state: State): string {
         <div class="sand-ground"></div>
         ${tower}
         ${pieces}
+        <div class="sand-trash" id="trash" aria-label="Trash">${trashIcon()}<span>Drop here to remove</span></div>
       </div>
       <div class="sand-tools">
         <button type="button" class="choice tower add-brick" data-act="sand-brick">${brickIcon()}<span>Add a brick</span><small>Height: ${sand.stack}</small></button>
@@ -630,4 +632,8 @@ function pieceHtml(p: Piece, creature: CreatureId): string {
 
 function escapeText(text: string): string {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function trashIcon(): string {
+  return `<svg viewBox="0 0 80 80" aria-hidden="true"><rect x="22" y="26" width="36" height="42" rx="5" fill="#d9d3c7" stroke="#241e18" stroke-width="3"/><rect x="16" y="18" width="48" height="8" rx="3" fill="#8a8175" stroke="#241e18" stroke-width="3"/><rect x="32" y="12" width="16" height="6" rx="2" fill="#8a8175" stroke="#241e18" stroke-width="2"/><path d="M32 34 V60 M40 34 V60 M48 34 V60" stroke="#241e18" stroke-width="3" stroke-linecap="round"/></svg>`;
 }

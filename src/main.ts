@@ -2,7 +2,7 @@ import "./style.css";
 import { fallLine, leanLine, levels, ringLine, type Level, type Step } from "./challenges";
 import { render } from "./render";
 import { afterCity, afterTower, canStack } from "./rules";
-import { addBrick, addPiece, movePiece, scatter, startSand } from "./sandbox";
+import { addBrick, addPiece, movePiece, removePiece, scatter, startSand } from "./sandbox";
 import { clearSave, fresh, LAST_LEVEL, load, save, toBuild, type Band, type CreatureId, type State } from "./state";
 import { previewMode, timing } from "./timing";
 
@@ -19,6 +19,7 @@ if (!app) throw new Error("Missing #app");
 function draw(): void {
   app!.dataset.band = state.band ?? "";
   app!.classList.toggle("full", state.phase === "band" || state.phase === "creature" || state.phase === "sandbox");
+  app!.classList.toggle("quiz", state.phase === "challenge");
   app!.innerHTML = render(state);
   fitBoards();
   save(state);
@@ -461,6 +462,7 @@ function onClick(event: MouseEvent): void {
 
 interface Drag {
   id: string;
+  el: HTMLElement;
   pointer: number;
   x: number;
   y: number;
@@ -510,11 +512,12 @@ function onPointerDown(event: PointerEvent): void {
   if (!item || state.phase !== "challenge" || state.reading) return;
   drag = {
     id: item.dataset.item ?? "",
+    el: item,
     pointer: event.pointerId,
     x: event.clientX,
     y: event.clientY,
     moved: false,
-    html: item.innerHTML,
+    html: item.outerHTML,
     ghost: null,
   };
 }
@@ -525,6 +528,11 @@ function onPointerMove(event: PointerEvent): void {
     const { x, y } = piecePos(pieceDrag, event);
     pieceDrag.el.style.left = `${x}%`;
     pieceDrag.el.style.top = `${y}%`;
+    const trash = document.querySelector<HTMLElement>("#trash");
+    if (trash) {
+      const r = trash.getBoundingClientRect();
+      trash.classList.toggle("over", event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom);
+    }
     return;
   }
   if (!drag || event.pointerId !== drag.pointer) return;
@@ -536,6 +544,7 @@ function onPointerMove(event: PointerEvent): void {
     ghost.innerHTML = drag.html;
     document.body.appendChild(ghost);
     drag.ghost = ghost;
+    drag.el.classList.add("lifting");
   }
   drag.ghost.style.left = `${event.clientX}px`;
   drag.ghost.style.top = `${event.clientY}px`;
@@ -555,8 +564,10 @@ function onPointerUp(event: PointerEvent): void {
     pieceDrag = null;
     current.el.classList.remove("lifted");
     if (!current.moved) return;
+    const trash = document.querySelector("#trash")?.getBoundingClientRect();
+    const inTrash = trash && event.clientX >= trash.left && event.clientX <= trash.right && event.clientY >= trash.top && event.clientY <= trash.bottom;
     const { x, y } = piecePos(current, event);
-    state.sand = movePiece(state.sand, current.id, x, y);
+    state.sand = inTrash ? removePiece(state.sand, current.id) : movePiece(state.sand, current.id, x, y);
     draw();
     return;
   }
@@ -564,6 +575,7 @@ function onPointerUp(event: PointerEvent): void {
   const current = drag;
   drag = null;
   current.ghost?.remove();
+  current.el.classList.remove("lifting");
   if (!current.moved) return;
   suppressClick = true;
   window.setTimeout(() => {
@@ -613,8 +625,9 @@ function closeStartOver(): void {
 
 let zoom = 1;
 function setZoom(z: number): void {
-  zoom = Math.round(Math.min(1.8, Math.max(0.7, z)) * 10) / 10;
+  zoom = Math.round(Math.min(1.8, Math.max(0.5, z)) * 10) / 10;
   app!.style.setProperty("--z", String(zoom));
+  document.documentElement.style.setProperty("--z", String(zoom));
   fitBoards();
   const label = document.querySelector<HTMLElement>("#zoom-level");
   if (label) label.textContent = `${Math.round(zoom * 100)}%`;

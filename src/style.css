@@ -37,6 +37,8 @@ button:focus-visible { outline: 4px solid var(--gold); outline-offset: 2px; }
   grid-template-rows: minmax(108px, 24vh) minmax(0, 1fr);
 }
 #app.full { grid-template-rows: minmax(0, 1fr); }
+/* While a question is on screen the city strip gives most of its height to the question. */
+#app.quiz { grid-template-rows: minmax(64px, 13vh) minmax(0, 1fr); }
 
 #start-over {
   position: fixed;
@@ -361,7 +363,6 @@ button:focus-visible { outline: 4px solid var(--gold); outline-offset: 2px; }
 .card.sel { background: #fff3c4; transform: translateY(-4px); }
 .card.odd { background: #eeeae4; }
 .card.bad, .zone.bad, .choice-card.bad, .slot-line.bad, .person-spot.bad { animation: shake 0.35s linear; }
-.fresh .card:first-child { animation: pulse 1.4s ease-in-out infinite; }
 
 .zones { align-items: stretch; }
 .zone {
@@ -392,7 +393,7 @@ button:focus-visible { outline: 4px solid var(--gold); outline-offset: 2px; }
   padding: 16px 16px 16px 22px;
 }
 .slot-line {
-  min-height: 72px;
+  min-height: 60px;
   border: 2px dashed var(--ink);
   border-radius: 12px;
   background: transparent;
@@ -419,9 +420,10 @@ button:focus-visible { outline: 4px solid var(--gold); outline-offset: 2px; }
 .choice svg, .choice-card svg { width: min(92px, 16vh); height: auto; }
 .choice.tower { background: #ffe1d2; }
 .choice.city { background: #d7f0e4; }
-.scene-art { display: grid; place-items: center; }
-.scene-art { min-height: 0; align-content: center; }
-.scene-art svg { width: min(200px, 40vw); height: auto; max-height: 26vh; }
+.scene-art { display: grid; justify-items: center; align-content: center; min-height: 0; overflow: hidden; }
+.scene-art svg { height: 26vh; max-height: 220px; width: auto; max-width: 40vw; }
+.targets .zone { height: clamp(110px, 24vh, 190px); min-height: 0; }
+.targets .zone svg { width: min(84px, 13vh); height: auto; }
 .targets { width: min(640px, 100%); margin: 0 auto; }
 
 .topgame { align-items: center; }
@@ -443,11 +445,11 @@ button:focus-visible { outline: 4px solid var(--gold); outline-offset: 2px; }
 .ghost {
   position: fixed;
   z-index: 40;
-  width: 96px;
-  transform: translate(-50%, -60%);
+  transform: translate(-50%, -60%) scale(var(--z));
+  transform-origin: 50% 60%;
   pointer-events: none;
-  filter: drop-shadow(3px 3px 0 rgba(36, 30, 24, 0.25));
 }
+.ghost .card { box-shadow: 6px 8px 0 rgba(36, 30, 24, 0.35); }
 body.hitting [data-item] { pointer-events: none; }
 
 .confirm {
@@ -507,7 +509,7 @@ body.hitting [data-item] { pointer-events: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .tower.lean { animation: none; transform: rotate(8deg); }
-  .grow, .fresh .card:first-child, .tower.anchor { animation: none; opacity: 1; }
+  .grow, .tower.anchor { animation: none; opacity: 1; }
   .tower.fall, .ghost-brick { animation-duration: 0.2s; }
 }
 @media (max-height: 720px) {
@@ -569,16 +571,16 @@ body.hitting [data-item] { pointer-events: none; }
 .rings { position: relative; height: 100%; max-height: 460px; aspect-ratio: 1; max-width: 100%; --cq: 400px; }
 .ring-zone { position: absolute; border-radius: 50%; border: 3px solid var(--ink); cursor: pointer; }
 .ring-zone.r2 { inset: 0; background: #e3efe0; }
-.ring-zone.r1 { inset: 16.667%; background: #f6e2cf; }
-.ring-zone.r0 { inset: 25%; background: #fff3c4; }
+.ring-zone.r1 { inset: 15%; background: #f6e2cf; }
+.ring-zone.r0 { inset: 30%; background: #fff3c4; }
 .ring-overlay { position: absolute; inset: 0; pointer-events: none; }
 .ring-piece { position: absolute; width: 11%; height: 11%; transform: translate(-50%, -50%); }
 .ring-piece svg { width: 100%; height: 100%; }
-.ring-tag { position: absolute; left: 50%; transform: translateX(-50%); font-weight: 800; font-size: 0.78rem; pointer-events: none; color: #5f574e; white-space: nowrap; }
-.ring-tag.in { top: 50%; transform: translate(-50%, -50%); }
+.ring-tag { position: absolute; left: 50%; transform: translateX(-50%); font-weight: 800; font-size: 0.9rem; pointer-events: none; color: var(--ink); white-space: nowrap; }
+.ring-tag.in { top: 50%; transform: translate(-50%, -50%); font-size: 0.78rem; }
 .rings.filled .ring-tag.in { display: none; }
-.ring-tag.mid { bottom: 18.5%; }
-.ring-tag.out { bottom: 2%; }
+.ring-tag.mid { bottom: 19%; }
+.ring-tag.out { bottom: 3%; }
 
 /* deliver the letters */
 .deliver-board { justify-items: center; grid-template-rows: minmax(0, 1fr) auto; }
@@ -742,12 +744,34 @@ body.hitting [data-item] { pointer-events: none; }
 }
 .piece svg { width: 100%; height: auto; display: block; pointer-events: none; }
 .piece.brickish { width: 60px; }
-.piece.wide { width: 170px; }
+.piece.wide { width: 120px; }
 .piece.lifted { z-index: 5; cursor: grabbing; filter: drop-shadow(4px 6px 0 rgba(36, 30, 24, 0.3)); }
+.sand-trash {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 76px;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+  border: 2px dashed var(--ink);
+  border-radius: 12px;
+  background: rgba(255, 253, 248, 0.7);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-align: center;
+  color: #5f574e;
+  pointer-events: none;
+}
+.sand-trash svg { width: 40px; height: 40px; }
+.sand-trash.over { background: #ffe1d2; border-style: solid; }
 .sand-tools { display: flex; gap: 12px; align-items: stretch; padding-left: 110px; }
 .sand-tools .add-brick { flex: 0 0 200px; height: auto; min-height: 96px; }
 .palette { flex: 1; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-content: center; }
 .card.pal { width: 96px; min-height: 90px; touch-action: manipulation; }
 .card.pal svg { width: 52px; height: 44px; }
 .stage .tray { padding-inline: 100px 160px; }
-.tray .card span { overflow-wrap: anywhere; }
+.tray .card span { overflow-wrap: break-word; }
+.card.long span { font-size: 0.7rem; letter-spacing: -0.01em; }
+.card.lifting { opacity: 0.35; }

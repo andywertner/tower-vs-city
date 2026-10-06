@@ -40,7 +40,7 @@ async function waitStep(page, level, beat) {
   });
 }
 
-const RING_MID = [0, 0.25, 0.417];
+const RING_MID = [0, 0.275, 0.425];
 
 async function zonePoint(page, sel) {
   const ring = /data-zone="r(\d)"/.exec(sel);
@@ -209,7 +209,7 @@ async function playBand(page, band, plan, opts = {}) {
     if (kind === "city") {
       await page.waitForSelector(".veil .mh-quote cite");
       const q = await page.$eval(".veil .mh-quote", (el) => el.textContent.trim());
-      if (!q.includes("Magnifica Humanitas ¶")) throw new Error(`quote without citation: ${q}`);
+      if (!q.includes("Magnifica Humanitas, paragraph")) throw new Error(`quote without citation: ${q}`);
       quotes.push(q);
       if (quotes.length === 1) await shot(page, `${band}-city-quote`);
     }
@@ -319,7 +319,7 @@ const s78 = await saved(p78);
 if (s78.sand.stack !== 0 || s78.sand.pieces.filter((p) => p.kind === "brick").length < 11) throw new Error(`scatter ${JSON.stringify(s78.sand).slice(0, 200)}`);
 await p78.click('[data-act="sand-add"][data-kind="church"]');
 await p78.click('[data-act="sand-add"][data-kind="house"]');
-const church = await p78.$('.piece:last-of-type');
+const church = (await p78.$$(".piece")).at(-1);
 const cBox = await church.boundingBox();
 const area = await (await p78.$("#sand")).boundingBox();
 await p78.mouse.move(cBox.x + cBox.width / 2, cBox.y + cBox.height / 2);
@@ -328,6 +328,18 @@ await p78.mouse.move(area.x + area.width * 0.5, area.y + area.height * 0.5, { st
 await p78.mouse.up();
 const moved = (await saved(p78)).sand.pieces.at(-1);
 if (Math.abs(moved.x - 50) > 3 || Math.abs(moved.y - 50) > 3) throw new Error(`piece did not move: ${JSON.stringify(moved)}`);
+// Drag a piece onto the trash can: it is removed.
+const victim = (await p78.$$(".piece")).at(0);
+const vBox = await victim.boundingBox();
+const tBox = await (await p78.$("#trash")).boundingBox();
+await p78.mouse.move(vBox.x + vBox.width / 2, vBox.y + vBox.height / 2);
+await p78.mouse.down();
+await p78.mouse.move(tBox.x + tBox.width / 2, tBox.y + tBox.height / 2, { steps: 8 });
+if (!(await p78.$("#trash.over"))) throw new Error("trash did not highlight");
+await shot(p78, "78-sandbox-trash");
+await p78.mouse.up();
+if ((await saved(p78)).sand.pieces.length !== s78.sand.pieces.length + 1) throw new Error("trash did not remove the piece");
+await p78.click('[data-act="sand-add"][data-kind="tree"]');
 await p78.reload({ waitUntil: "networkidle0" });
 const kept = (await saved(p78)).sand.pieces.length;
 if (!(await p78.$(".sandbox")) || kept !== s78.sand.pieces.length + 2) throw new Error("sandbox not kept on refresh");

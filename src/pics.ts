@@ -44,7 +44,9 @@ export const PICS = {
   rainbow: icon(`<path d="M8 60 A32 32 0 0 1 72 60" fill="none" stroke="#c4553a" stroke-width="6"/><path d="M16 60 A24 24 0 0 1 64 60" fill="none" stroke="#f0c14d" stroke-width="6"/><path d="M24 60 A16 16 0 0 1 56 60" fill="none" stroke="#2f6d4f" stroke-width="6"/><path d="M32 60 A8 8 0 0 1 48 60" fill="none" stroke="#1f4e79" stroke-width="6"/>`),
   galaxy: icon(`<circle cx="40" cy="40" r="30" fill="#1b2340"/><path d="M40 40 m-18 0 a18 8 25 1 0 36 0 a18 8 25 1 0 -36 0" fill="none" stroke="#b9a6f0" stroke-width="3"/><circle cx="40" cy="40" r="5" fill="#fff3c4"/><circle cx="22" cy="24" r="1.5" fill="#fff"/><circle cx="58" cy="56" r="1.5" fill="#fff"/><circle cx="60" cy="22" r="1" fill="#fff"/>`),
   grandparent: icon(`<circle cx="36" cy="22" r="10" fill="#f2cc8f" ${S}/><path d="M26 18 Q36 8 46 18" fill="#d9d3c7" ${S}/><rect x="26" y="34" width="20" height="30" rx="8" fill="#6d4c2b" ${S}/><path d="M54 36 V68 M54 36 Q54 30 48 32" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`),
-  helping: icon(`${figure(22, 16, "#2f6d4f", 7)}<path d="M28 38 L46 48" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><circle cx="54" cy="46" r="7" fill="#f2cc8f" ${S}/><rect x="46" y="54" width="18" height="12" rx="5" fill="#c4553a" ${S}/><path d="M10 68 H70" stroke="${INK}" stroke-width="3"/>`),
+  helping: icon(
+    `${figure(20, 16, "#2f6d4f", 7)}<path d="M27 30 L41 43" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="40" r="7" fill="#f2cc8f" ${S}/><rect x="52" y="48" width="16" height="14" rx="5" fill="#c4553a" ${S}/><rect x="52" y="60" width="22" height="8" rx="3" fill="#1f4e79" ${S}/><path d="M54 52 L45 45" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><circle cx="43" cy="44" r="3.5" fill="#f2cc8f" ${S}/><path d="M8 68 H72" stroke="${INK}" stroke-width="3"/>`,
+  ),
   church: building(
     `<polygon points="10,34 40,14 70,34" fill="#c4553a" ${S}/><rect x="36" y="2" width="8" height="14" fill="#d9d3c7" ${S}/><path d="M40 2 V-4" stroke="${INK}"/>`,
     "#f6f1e7",
@@ -61,7 +63,7 @@ export const PICS = {
   stadium: icon(`<ellipse cx="40" cy="44" rx="34" ry="20" fill="#8a8175" ${S}/><ellipse cx="40" cy="44" rx="24" ry="12" fill="#2f6d4f"/><path d="M40 32 V56" stroke="#fff" stroke-width="2"/><circle cx="40" cy="44" r="4" fill="none" stroke="#fff" stroke-width="2"/>`),
   gamestore: building(`<path d="M10 34 L16 22 H64 L70 34 Z" fill="#6b3fa0" ${S}/>`, "#f6f1e7", `<rect x="26" y="40" width="28" height="14" rx="7" fill="#8a8175" ${S}/><circle cx="33" cy="47" r="2" fill="${INK}"/><circle cx="47" cy="47" r="2" fill="${INK}"/>${txt(40, 31, "GAMES", 6, "#fff")}`),
   gameTurns: screen(
-    `${txt(40, 24, "WHOSE TURN?", 6)}${figure(24, 33, "#e07a5f", 4)}${figure(40, 33, "#81b29a", 4)}${figure(56, 33, "#1f4e79", 4)}<path d="M20 50 Q40 58 60 50" fill="none" stroke="#2f6d4f" stroke-width="2.5"/><path d="M60 50 l-5 -1 2 -4" fill="none" stroke="#2f6d4f" stroke-width="2.5"/><path d="M36 20 l4 -4 4 4" fill="none" stroke="#c4553a" stroke-width="2"/>`,
+    `${txt(40, 22, "WHOSE TURN?", 5.5)}${figure(24, 35, "#e07a5f", 4)}${figure(40, 35, "#81b29a", 4)}${figure(56, 35, "#1f4e79", 4)}<polygon points="36,25 44,25 40,30" fill="#2f6d4f"/>${txt(24, 49, "1", 4)}${txt(40, 49, "2", 4)}${txt(56, 49, "3", 4)}`,
   ),
   poll: phone(`${txt(40, 22, "WHO'S BEST?", 5)}<rect x="28" y="28" width="22" height="6" fill="#c4553a"/><rect x="28" y="38" width="14" height="6" fill="#d9d3c7"/><rect x="28" y="48" width="8" height="6" fill="#d9d3c7"/>`),
   chatSpam: phone(`${[20, 28, 36, 44, 52, 60].map((y, i) => txt(i % 2 ? 44 : 36, y, "ME ME ME", 5, "#c4553a")).join("")}`),

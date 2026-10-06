@@ -103,7 +103,7 @@ export function choiceLine(fallen: boolean, rubble: number): string {
 export function choiceLabels(fallen: boolean, rubble: number): { tower: string; city: string; towerTime: string; cityTime: string } {
   return {
     tower: "Add a brick",
-    city: fallen && rubble > 0 ? "Build from the ruins" : "Build the city",
+    city: fallen && rubble > 0 ? "Build the city from the ruins" : "Build the city",
     towerTime: "5 seconds",
     cityTime: "25 seconds",
   };
@@ -114,7 +114,10 @@ export function stackLine(bricks: number): string {
   return "Adding a brick to your tower.";
 }
 
-export function cityLine(): string {
+export const CITY_FULL = 8;
+
+export function cityLine(city: number): string {
+  if (city >= CITY_FULL) return "Your city is complete. Every brick you add now makes its walls stronger. Read this while you wait.";
   return "Your city is being built. Read this while you wait.";
 }
 
@@ -137,43 +140,43 @@ const MH = "Magnifica Humanitas";
 const QUOTES: Quote[] = [
   {
     text: "Humanity… is today facing a pivotal choice: either to construct a new Tower of Babel or to build the city in which God and humanity dwell together.",
-    cite: `${MH} ¶1`,
+    cite: `${MH}, paragraph 1`,
   },
   {
     text: "…the city is reborn, not through the initiative of one man, but through the shared responsibility of all.",
-    cite: `${MH} ¶8`,
+    cite: `${MH}, paragraph 8`,
   },
   {
     text: "It is an undertaking with God at the center, which rebuilds relationships before rebuilding with stones.",
-    cite: `${MH} ¶8`,
+    cite: `${MH}, paragraph 8`,
   },
   {
     text: "Technology has the power to heal, connect, educate and protect our common home; but it can also divide, exclude and generate new forms of injustice.",
-    cite: `${MH} ¶9`,
+    cite: `${MH}, paragraph 9`,
   },
   {
     text: "…no one is so weak that they cannot play their part.",
-    cite: `${MH} ¶13`,
+    cite: `${MH}, paragraph 13`,
   },
   {
     text: "True progress always stems from a heart open to others, an intelligence willing to listen and a will that seeks what unites rather than what separates.",
-    cite: `${MH} ¶15`,
+    cite: `${MH}, paragraph 15`,
   },
   {
     text: "…the grandeur of humanity bestowed upon us and revealed in its fullness in Christ, the splendor of which no machine can ever replace.",
-    cite: `${MH} ¶15`,
+    cite: `${MH}, paragraph 15`,
   },
   {
     text: "Let us not be afraid to get our hands dirty on the “construction site” of our time.",
-    cite: `${MH} ¶16`,
+    cite: `${MH}, paragraph 16`,
   },
   {
     text: "…the task that stands before us is that of being builders of communion, rather than architects of Babel.",
-    cite: `${MH} ¶16`,
+    cite: `${MH}, paragraph 16`,
   },
   {
     text: "…a small light continues to shine within humanity, one that can be rekindled, with God’s grace, along paths of conversion and reconciliation.",
-    cite: `${MH} ¶121`,
+    cite: `${MH}, paragraph 121`,
   },
 ];
 
@@ -182,7 +185,7 @@ export function quoteFor(index: number): Quote {
 }
 
 export const SANDBOX_TITLE = "What are we building?";
-export const SANDBOX_CITE = `${MH} ¶90`;
+export const SANDBOX_CITE = `${MH}, paragraph 90`;
 export const SANDBOX_HINT = "Free play. There is nothing to finish and no right answer. Stack a tower, knock it down, build a town from the pieces, or make something silly. Drag anything to move it.";
 
 export function levels(band: Band, creature: CreatureId): Level[] {
@@ -325,13 +328,13 @@ const PEOPLE: Person[] = [
   { id: "p0", name: "Ana", color: "#c4553a", shape: "●" },
   { id: "p1", name: "Ben", color: "#1f4e79", shape: "■" },
   { id: "p2", name: "Cruz", color: "#2f6d4f", shape: "▲" },
-  { id: "p3", name: "Dev", color: "#e0a106", shape: "★" },
+  { id: "p3", name: "Dev", color: "#f0c14d", shape: "★" },
   { id: "p4", name: "Eli", color: "#6b3fa0", shape: "♥" },
-  { id: "p5", name: "Fay", color: "#e07a5f", shape: "◆" },
-  { id: "p6", name: "Gus", color: "#3f88b5", shape: "☾" },
-  { id: "p7", name: "Hana", color: "#8b5a2b", shape: "✚" },
-  { id: "p8", name: "Ivo", color: "#81b29a", shape: "⬢" },
-  { id: "p9", name: "Jade", color: "#d9719a", shape: "✿" },
+  { id: "p5", name: "Fay", color: "#f08a24", shape: "◆" },
+  { id: "p6", name: "Gus", color: "#7ec8e3", shape: "☾" },
+  { id: "p7", name: "Hana", color: "#6d4c2b", shape: "✚" },
+  { id: "p8", name: "Ivo", color: "#f4a6c8", shape: "⬢" },
+  { id: "p9", name: "Jade", color: "#ffffff", shape: "✿" },
 ];
 
 function deliver(band: Band): Level {
@@ -428,7 +431,7 @@ function king(): Level {
     steps: [
       {
         kind: "king",
-        prompt: "Everyone wants to be on top. Tap each brick to send it up the tower.",
+        prompt: "Everyone wants to be on top. Each brick is a different person, and every one of them says ME. Tap each brick to send it up the tower.",
         success: "Only one fits on top. Everyone else gets knocked off.",
         bricks: ["#c4553a", "#1f4e79", "#2f6d4f", "#e0a106", "#6b3fa0"],
       },
@@ -474,7 +477,7 @@ function rings(band: Band): Level {
         ],
         quote: {
           text: "Building a city founded on the common good implies, first and foremost, building on a firm relationship with God.",
-          cite: `${MH} ¶11`,
+          cite: `${MH}, paragraph 11`,
         },
         button: "Next",
       },
@@ -487,7 +490,7 @@ function rings(band: Band): Level {
         ],
         quote: {
           text: "It is an undertaking with God at the center, which rebuilds relationships before rebuilding with stones.",
-          cite: `${MH} ¶8`,
+          cite: `${MH}, paragraph 8`,
         },
         button: "Sort them",
       },
@@ -618,13 +621,13 @@ function nehemiah(band: Band): Level {
       kind: "card",
       art: `<div class="card-art-row">${ICONS.houses}${PICS.nehemiah}${ICONS.houses}</div>`,
       lines: [
-        "Pope Leo picks Nehemiah as a guide for our time.",
+        "Nehemiah went home and led the people of Jerusalem to rebuild the city wall. Pope Leo picks him as a guide for our time.",
         "Nehemiah did not build the wall alone, and he did not boss everyone around.",
         "Each family rebuilt the part of the wall next to their own home, and the whole wall rose together.",
       ],
       quote: {
         text: "He did not impose solutions from above. He convened the families, assigned each of them a section of the wall to rebuild, listened to their concerns, coordinated their efforts and addressed any opposition.",
-        cite: `${MH} ¶8`,
+        cite: `${MH}, paragraph 8`,
       },
       button: "Now you are Nehemiah",
     },
@@ -709,7 +712,7 @@ function bridge(): Level {
         kind: "card",
         art: `<div class="card-art-row">${ICONS.blocks}</div>`,
         lines: ["Everyone starts building a tower sometimes. Pope Leo says those towers are headed for ruin."],
-        quote: { text: "We are to be servants of the coming Kingdom, instead of lords of towers destined for ruin.", cite: `${MH} ¶16` },
+        quote: { text: "We are to be servants of the coming Kingdom, instead of lords of towers destined for ruin.", cite: `${MH}, paragraph 16` },
         button: "Next",
       },
       {
@@ -721,7 +724,7 @@ function bridge(): Level {
         ],
         quote: {
           text: "…the ruins of Jerusalem, which under Nehemiah’s direction are rebuilt piece by piece as a project of shared responsibility.",
-          cite: `${MH} ¶90`,
+          cite: `${MH}, paragraph 90`,
         },
         button: "Start building",
       },

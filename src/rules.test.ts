@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { afterCity, afterTower, canStack, emptyBuild, endingOf, type Build } from "./rules.ts";
 import { timing } from "./timing.ts";
-import { addBrick, fallChance, MAX_HEIGHT, scatter, startSand, sway } from "./sandbox.ts";
+import { addBrick, addPiece, fallChance, MAX_HEIGHT, movePiece, removePiece, scatter, startSand, sway } from "./sandbox.ts";
 import { emptySand } from "./state.ts";
 import { LEVEL_COUNT, levels } from "./challenges.ts";
 
@@ -92,6 +92,14 @@ const started = startSand(emptySand(), 4, () => 0.3);
 assert.equal(started.pieces.filter((p) => p.kind === "brick").length, 4);
 assert.equal(started.pieces.filter((p) => p.kind === "family").length, 1);
 assert.equal(startSand(started, 4, () => 0.3), started);
+// New pieces land on the ground band, not in the sky.
+assert.ok(scattered.pieces.every((p) => p.y >= 72));
+assert.ok(addPiece(emptySand(), "house", () => 0).pieces[0].y >= 72);
+// Moving a piece brings it to the front; the trash removes it.
+const moved = movePiece(started, started.pieces[0].id, 50, 80);
+assert.equal(moved.pieces[moved.pieces.length - 1].id, started.pieces[0].id);
+assert.equal(moved.pieces.length, started.pieces.length);
+assert.equal(removePiece(started, started.pieces[0].id).pieces.length, started.pieces.length - 1);
 
 const lvls = levels("78", "baby");
 assert.equal(lvls.length, LEVEL_COUNT);
